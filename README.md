@@ -84,7 +84,7 @@ After running the app:
 | **Dashboard** | `/` | Central hub linking to all sections |
 | **Vehicles CRUD** | `/vehicles` | Add, view, edit, or delete vehicles |
 | **Deliveries CRUD** | `/deliveries` | Manage deliveries by vehicle and route |
-| **Maintenance Logs CRUD** | `/deliveries` | Manage maintenance logs |
+| **Maintenance Logs CRUD** | `/maintenance` | Manage maintenance logs |
 | **Reports** | `/reports/vehicle_utilization` <br> `/reports/deliveries_per_route` | Generate summary insights |
 | **Audit Log** | `/audit` | Review recorded database changes |
 
