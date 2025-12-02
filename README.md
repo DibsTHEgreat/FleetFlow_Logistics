@@ -84,6 +84,7 @@ After running the app:
 | **Dashboard** | `/` | Central hub linking to all sections |
 | **Vehicles CRUD** | `/vehicles` | Add, view, edit, or delete vehicles |
 | **Deliveries CRUD** | `/deliveries` | Manage deliveries by vehicle and route |
+| **Maintenance Logs CRUD** | `/deliveries` | Manage maintenance logs |
 | **Reports** | `/reports/vehicle_utilization` <br> `/reports/deliveries_per_route` | Generate summary insights |
 | **Audit Log** | `/audit` | Review recorded database changes |
 
@@ -97,20 +98,6 @@ After running the app:
 4. Update delivery status to “Completed”  
 5. Check `/audit` to confirm changes are logged  
 6. View performance in `/reports/vehicle_utilization`
-
----
-
-## 🧪 Evidence of Operation
-
-Located in `docs/screenshots/`:
-
-- `dashboard.png`
-- `vehicles_list.png`
-- `deliveries_list.png`
-- `vehicle_utilization.png`
-- `audit_log.png`
-
-Each screenshot demonstrates CRUD functionality, reporting, and audit logging.
 
 ---
 
