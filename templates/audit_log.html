@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Audit Log</h1>
+<p class="text-muted">
+    Recent changes recorded in the system (inserts, updates, deletes).
+</p>
+
+<table class="table table-striped table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>Timestamp (UTC)</th>
+            <th>User</th>
+            <th>Action</th>
+            <th>Table</th>
+            <th>Record ID</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for row in rows %}
+        <tr>
+            <td>{{ row["timestamp"] }}</td>
+            <td>{{ row["user"] }}</td>
+            <td>{{ row["action"] }}</td>
+            <td>{{ row["table_name"] }}</td>
+            <td>{{ row["record_id"] }}</td>
+            <td>
+                {% if row["details"] %}
+                    <code>{{ row["details"] }}</code>
+                {% else %}
+                    <span class="text-muted">–</span>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

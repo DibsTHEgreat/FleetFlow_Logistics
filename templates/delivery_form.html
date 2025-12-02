@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ "Edit Delivery" if is_edit else "Add Delivery" }}</h1>
+
+{% if error %}
+<div class="alert alert-danger">
+    {{ error }}
+</div>
+{% endif %}
+
+<form action="{{ form_action }}" method="post" class="mt-3">
+
+    <div class="mb-3">
+        <label for="vehicle_id" class="form-label">Vehicle</label>
+        <select id="vehicle_id" name="vehicle_id" class="form-select" required>
+            <option value="">-- Select Vehicle --</option>
+            {% for v in vehicles %}
+                {% set selected = (delivery and delivery["vehicle_id"] == v["vehicle_id"]) %}
+                <option value="{{ v['vehicle_id'] }}" {% if selected %}selected{% endif %}>
+                    {{ v["vehicle_id"] }} ({{ v["type"] }})
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="route_id" class="form-label">Route</label>
+        <select id="route_id" name="route_id" class="form-select" required>
+            <option value="">-- Select Route --</option>
+            {% for r in routes %}
+                {% set selected = (delivery and delivery["route_id"] == r["route_id"]) %}
+                <option value="{{ r['route_id'] }}" {% if selected %}selected{% endif %}>
+                    {{ r["route_id"] }}: {{ r["origin"] }} → {{ r["destination"] }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="delivery_date" class="form-label">Delivery Date</label>
+        <input type="date"
+               class="form-control"
+               id="delivery_date"
+               name="delivery_date"
+               required
+               value="{{ delivery['delivery_date'] if delivery else '' }}">
+    </div>
+
+    <div class="mb-3">
+        <label for="scheduled_time" class="form-label">Scheduled Time (ISO)</label>
+        <input type="text"
+               class="form-control"
+               id="scheduled_time"
+               name="scheduled_time"
+               placeholder="e.g. 2025-11-24T09:00"
+               value="{{ delivery['scheduled_time'] if delivery and delivery['scheduled_time'] else '' }}">
+    </div>
+
+    <div class="mb-3">
+        <label for="delivery_time" class="form-label">Actual Delivery Time (ISO)</label>
+        <input type="text"
+               class="form-control"
+               id="delivery_time"
+               name="delivery_time"
+               placeholder="e.g. 2025-11-24T09:30"
+               value="{{ delivery['delivery_time'] if delivery and delivery['delivery_time'] else '' }}">
+    </div>
+
+    <div class="mb-3">
+        <label for="customer_name" class="form-label">Customer Name</label>
+        <input type="text"
+               class="form-control"
+               id="customer_name"
+               name="customer_name"
+               value="{{ delivery['customer_name'] if delivery and delivery['customer_name'] else '' }}">
+    </div>
+
+    <div class="mb-3">
+        <label for="customer_address" class="form-label">Customer Address</label>
+        <textarea id="customer_address"
+                  name="customer_address"
+                  class="form-control"
+                  rows="2">{{ delivery['customer_address'] if delivery and delivery['customer_address'] else '' }}</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="status" class="form-label">Status</label>
+        {% set current_status = delivery['status'] if delivery else 'pending' %}
+        <select id="status" name="status" class="form-select" required>
+            <option value="pending"     {% if current_status == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="in_transit"  {% if current_status == 'in_transit' %}selected{% endif %}>In Transit</option>
+            <option value="completed"   {% if current_status == 'completed' %}selected{% endif %}>Completed</option>
+            <option value="cancelled"   {% if current_status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        {{ "Save Changes" if is_edit else "Create Delivery" }}
+    </button>
+    <a href="{{ url_for('list_deliveries') }}" class="btn btn-secondary ms-2">Cancel</a>
+</form>
+{% endblock %}

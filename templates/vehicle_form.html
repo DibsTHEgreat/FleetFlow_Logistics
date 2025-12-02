@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ "Edit Vehicle" if is_edit else "Add Vehicle" }}</h1>
+
+{% if error %}
+<div class="alert alert-danger">
+    {{ error }}
+</div>
+{% endif %}
+
+<form action="{{ form_action }}" method="post" class="mt-3">
+    {% if not is_edit %}
+    <!-- When creating, user can set vehicle_id -->
+    <div class="mb-3">
+        <label for="vehicle_id" class="form-label">Vehicle ID</label>
+        <input type="text"
+               class="form-control"
+               id="vehicle_id"
+               name="vehicle_id"
+               required>
+    </div>
+    {% else %}
+    <!-- When editing, show vehicle_id but don't allow changes -->
+    <div class="mb-3">
+        <label class="form-label">Vehicle ID</label>
+        <input type="text"
+               class="form-control"
+               value="{{ vehicle['vehicle_id'] }}"
+               disabled>
+    </div>
+    {% endif %}
+
+    <div class="mb-3">
+        <label for="type" class="form-label">Type</label>
+        <input type="text"
+               class="form-control"
+               id="type"
+               name="type"
+               value="{{ vehicle['type'] if vehicle else '' }}"
+               required>
+    </div>
+
+    <div class="mb-3">
+        <label for="capacity" class="form-label">Capacity (kg)</label>
+        <input type="number"
+               class="form-control"
+               id="capacity"
+               name="capacity"
+               min="0"
+               value="{{ vehicle['capacity'] if vehicle and vehicle['capacity'] is not none else '' }}">
+    </div>
+
+    <div class="mb-3">
+        <label for="status" class="form-label">Status</label>
+        <select id="status" name="status" class="form-select" required>
+            {% set current_status = vehicle['status'] if vehicle else 'active' %}
+            <option value="active" {% if current_status == 'active' %}selected{% endif %}>Active</option>
+            <option value="maintenance" {% if current_status == 'maintenance' %}selected{% endif %}>Maintenance</option>
+            <option value="retired" {% if current_status == 'retired' %}selected{% endif %}>Retired</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="license_plate" class="form-label">License Plate</label>
+        <input type="text"
+               class="form-control"
+               id="license_plate"
+               name="license_plate"
+               value="{{ vehicle['license_plate'] if vehicle else '' }}"
+               required>
+    </div>
+
+    <div class="mb-3">
+        <label for="current_odometer" class="form-label">Current Odometer (km)</label>
+        <input type="number"
+               class="form-control"
+               id="current_odometer"
+               name="current_odometer"
+               min="0"
+               value="{{ vehicle['current_odometer'] if vehicle and vehicle['current_odometer'] is not none else '' }}">
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        {{ "Save Changes" if is_edit else "Create Vehicle" }}
+    </button>
+    <a href="{{ url_for('list_vehicles') }}" class="btn btn-secondary ms-2">Cancel</a>
+</form>
+{% endblock %}

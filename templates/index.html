@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>FleetFlow Operations Dashboard</h1>
+<p class="text-muted">
+    Welcome to the FleetFlow internal management system. Use this dashboard to manage vehicles,
+    deliveries, maintenance logs, and access key operational reports.
+</p>
+
+<div class="row mt-4">
+    <!-- Vehicles -->
+    <div class="col-md-3 mb-3">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Vehicles</h5>
+                <p class="card-text">
+                    Manage fleet vehicles, statuses, and capacity.
+                </p>
+                <a href="{{ url_for('list_vehicles') }}" class="btn btn-primary w-100">Go to Vehicles</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deliveries -->
+    <div class="col-md-3 mb-3">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Deliveries</h5>
+                <p class="card-text">
+                    Track deliveries by vehicle and route, and update their progress.
+                </p>
+                <a href="{{ url_for('list_deliveries') }}" class="btn btn-primary w-100">Go to Deliveries</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports -->
+    <div class="col-md-3 mb-3">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Reports</h5>
+                <p class="card-text">
+                    View key operational insights and summaries.
+                </p>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('vehicle_utilization_report') }}" class="btn btn-success w-100">
+                        Vehicle Utilization
+                    </a>
+                    <a href="{{ url_for('deliveries_per_route_report') }}" class="btn btn-success w-100">
+                        Deliveries per Route
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Audit Log -->
+    <div class="col-md-3 mb-3">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Audit Log</h5>
+                <p class="card-text">
+                    Review all insert, update, and delete operations for accountability.
+                </p>
+                <a href="{{ url_for('view_audit_log') }}" class="btn btn-secondary w-100">View Audit Log</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
