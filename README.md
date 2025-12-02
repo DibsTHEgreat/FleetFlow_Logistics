@@ -146,28 +146,6 @@ All schema logic, database relationships, and business rules were designed, revi
 
 ---
 
-## 📦 File Structure
-fleetflow_case3/
-│
-├── app.py                     # Flask application with routes & CRUD
-├── fleet_setup.py             # Schema creation script
-├── load_sample_data.py        # Inserts realistic sample data
-├── fleetflow.db               # SQLite database (after setup)
-│
-├── templates/                 # HTML templates (Bootstrap-based)
-│   ├── base.html
-│   ├── index.html
-│   ├── vehicles.html
-│   ├── deliveries.html
-│   ├── reports/
-│   └── audit_log.html
-│
-├── docs/
-│   ├── FleetFlow_Memo.pdf
-│   └── screenshots/
-│
-└── README.md
-
 **Author:** Divya Pateliya  
 **Course:** MGT 4850 – Data Management & Business Analytics  
 **Institution:** University of Lethbridge  
