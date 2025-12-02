@@ -443,6 +443,186 @@ def deliveries_per_route_report():
     ).fetchall()
     return render_template("report_deliveries_per_route.html", rows=rows)
 
+# ---------- MAINTENANCE LOGS CRUD ----------
+@app.route("/maintenance")
+def list_maintenance():
+    """
+    List all maintenance logs, joined with vehicle info.
+    """
+    db = get_db()
+    logs = db.execute(
+        """
+        SELECT m.log_id,
+               m.service_date,
+               m.service_type,
+               m.description,
+               m.vendor,
+               m.cost,
+               m.odometer_at_service,
+               v.vehicle_id,
+               v.type AS vehicle_type
+        FROM maintenance_logs m
+        JOIN vehicles v ON m.vehicle_id = v.vehicle_id
+        ORDER BY m.service_date DESC, m.log_id DESC
+        """
+    ).fetchall()
+    return render_template("maintenance_logs.html", logs=logs)
+
+@app.route("/maintenance/new", methods=["GET", "POST"])
+def create_maintenance():
+    """
+    Create a new maintenance log entry.
+    """
+    db = get_db()
+
+    if request.method == "POST":
+        vehicle_id = request.form.get("vehicle_id")
+        service_date = request.form.get("service_date")
+        service_type = request.form.get("service_type")
+        description = request.form.get("description")
+        odometer_raw = request.form.get("odometer_at_service")
+        vendor = request.form.get("vendor") or None
+        cost_raw = request.form.get("cost")
+
+        odometer_at_service = int(odometer_raw) if odometer_raw else None
+        cost = float(cost_raw) if cost_raw else None
+
+        db.execute(
+            """
+            INSERT INTO maintenance_logs (
+                vehicle_id, service_date, description,
+                service_type, odometer_at_service, vendor, cost
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                vehicle_id,
+                service_date,
+                description,
+                service_type,
+                odometer_at_service,
+                vendor,
+                cost,
+            ),
+        )
+        log_audit(
+            db,
+            action="INSERT",
+            table_name="maintenance_logs",
+            record_id="(auto)",
+            user="demo_user",
+            details=f"Created maintenance log for vehicle {vehicle_id}",
+        )
+        db.commit()
+        return redirect(url_for("list_maintenance"))
+
+    # GET: load active vehicles for dropdown
+    vehicles = db.execute(
+        "SELECT vehicle_id, type FROM vehicles WHERE status != 'retired' ORDER BY vehicle_id"
+    ).fetchall()
+
+    return render_template(
+        "maintenance_form.html",
+        log=None,
+        vehicles=vehicles,
+        form_action=url_for("create_maintenance"),
+        is_edit=False,
+        error=None,
+    )
+
+@app.route("/maintenance/<int:log_id>/edit", methods=["GET", "POST"])
+def edit_maintenance(log_id):
+    """
+    Edit an existing maintenance log.
+    """
+    db = get_db()
+    log = db.execute(
+        "SELECT * FROM maintenance_logs WHERE log_id = ?",
+        (log_id,),
+    ).fetchone()
+
+    if log is None:
+        return "Maintenance log not found", 404
+
+    if request.method == "POST":
+        vehicle_id = request.form.get("vehicle_id")
+        service_date = request.form.get("service_date")
+        service_type = request.form.get("service_type")
+        description = request.form.get("description")
+        odometer_raw = request.form.get("odometer_at_service")
+        vendor = request.form.get("vendor") or None
+        cost_raw = request.form.get("cost")
+
+        odometer_at_service = int(odometer_raw) if odometer_raw else None
+        cost = float(cost_raw) if cost_raw else None
+
+        db.execute(
+            """
+            UPDATE maintenance_logs
+            SET vehicle_id = ?,
+                service_date = ?,
+                service_type = ?,
+                description = ?,
+                odometer_at_service = ?,
+                vendor = ?,
+                cost = ?
+            WHERE log_id = ?
+            """,
+            (
+                vehicle_id,
+                service_date,
+                service_type,
+                description,
+                odometer_at_service,
+                vendor,
+                cost,
+                log_id,
+            ),
+        )
+        log_audit(
+            db,
+            action="UPDATE",
+            table_name="maintenance_logs",
+            record_id=log_id,
+            user="demo_user",
+            details=f"Updated maintenance log {log_id}",
+        )
+        db.commit()
+        return redirect(url_for("list_maintenance"))
+
+    vehicles = db.execute(
+        "SELECT vehicle_id, type FROM vehicles WHERE status != 'retired' ORDER BY vehicle_id"
+    ).fetchall()
+
+    return render_template(
+        "maintenance_form.html",
+        log=log,
+        vehicles=vehicles,
+        form_action=url_for("edit_maintenance", log_id=log_id),
+        is_edit=True,
+        error=None,
+    )
+
+@app.route("/maintenance/<int:log_id>/delete", methods=["POST"])
+def delete_maintenance(log_id):
+    """
+    Delete a maintenance log entry.
+    """
+    db = get_db()
+    db.execute(
+        "DELETE FROM maintenance_logs WHERE log_id = ?",
+        (log_id,),
+    )
+    log_audit(
+        db,
+        action="DELETE",
+        table_name="maintenance_logs",
+        record_id=log_id,
+        user="demo_user",
+        details=f"Deleted maintenance log {log_id}",
+    )
+    db.commit()
+    return redirect(url_for("list_maintenance"))
+
 # ---------- AUDITS ----------
 @app.route("/audit")
 def view_audit_log():
